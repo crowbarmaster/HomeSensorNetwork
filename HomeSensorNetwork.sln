@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DoorRfidController", "DoorRfidController\DoorRfidController.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GatewayNode", "gateway\gateway.vcxproj", "{19F60A53-13F1-4977-BB78-64C4A9EFE086}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RoomTempNode", "RoomTempNode\RoomTempNode.vcxproj", "{0641641F-C290-4CBE-BE4F-DB177D0B4C07}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RoomNodeInfraredHeat", "RoomNodeInfraredHeat\RoomNodeInfraredHeat.vcxproj", "{A16144A5-3F3F-4536-9852-C7E578B27DD3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{19F60A53-13F1-4977-BB78-64C4A9EFE086}.Debug|x86.ActiveCfg = Debug|Win32
+		{19F60A53-13F1-4977-BB78-64C4A9EFE086}.Debug|x86.Build.0 = Debug|Win32
+		{19F60A53-13F1-4977-BB78-64C4A9EFE086}.Release|x86.ActiveCfg = Release|Win32
+		{19F60A53-13F1-4977-BB78-64C4A9EFE086}.Release|x86.Build.0 = Release|Win32
+		{0641641F-C290-4CBE-BE4F-DB177D0B4C07}.Debug|x86.ActiveCfg = Debug|Win32
+		{0641641F-C290-4CBE-BE4F-DB177D0B4C07}.Debug|x86.Build.0 = Debug|Win32
+		{0641641F-C290-4CBE-BE4F-DB177D0B4C07}.Release|x86.ActiveCfg = Release|Win32
+		{0641641F-C290-4CBE-BE4F-DB177D0B4C07}.Release|x86.Build.0 = Release|Win32
+		{A16144A5-3F3F-4536-9852-C7E578B27DD3}.Debug|x86.ActiveCfg = Debug|Win32
+		{A16144A5-3F3F-4536-9852-C7E578B27DD3}.Debug|x86.Build.0 = Debug|Win32
+		{A16144A5-3F3F-4536-9852-C7E578B27DD3}.Release|x86.ActiveCfg = Release|Win32
+		{A16144A5-3F3F-4536-9852-C7E578B27DD3}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3E99B51E-86F1-42AD-83D6-BCE75A5CD900}
+	EndGlobalSection
+EndGlobal
