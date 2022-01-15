@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 DoorRfidController\Secret.h
+/DoorRfidController/Secret.h
