@@ -22,9 +22,12 @@
 #define SensType DHT22
 
 #define RoomTempId 0
-#define RoomHumidId 1
+#define RoomHumdId 1
 #define VapeStateId 2
 #define VapeAlarmId 3
+#define MasterHumdEnableId 4
+#define RiseAboveStateId 5
+#define FallBelowStateId 6
 DHT RoomSens(RoomSensPin, SensType);
 
 //Misc defines
@@ -33,18 +36,24 @@ DHT RoomSens(RoomSensPin, SensType);
 
 // SaveState Positions
 const uint8_t HumidLevelPos = 0;
+const uint8_t MasterHundEnablePos = 1;
 
 // Initialize messages
 MyMessage RoomTempMsg(RoomTempId, V_TEMP);
-MyMessage RoomHumdMsg(RoomHumidId, V_HUM);
+MyMessage RoomHumdMsg(RoomHumdId, V_HUM);
 MyMessage RoomVapeStatus(VapeStateId, V_LOCK_STATUS);
 MyMessage VapeAlarm(VapeAlarmId, V_TRIPPED);
+MyMessage HumdEnableMsg(MasterHumdEnableId, V_LOCK_STATUS);
 
 //Temp defaults
-uint8_t TargetHumd = 35;
-const int Hysteresis = 2;
+uint8_t TargetHumd = 50;
+const int lowHysteresis = 3;
+const int highHysteresis = 1;
+const float tempCorrectionFactor = 0.95;
+const float humdCorrectionFactor = 0.95;
 bool VapePowered = false;
 long VapePoweredTime = 0;
+bool MasterVapeEnabled = false;
 
 void setup()
 {
@@ -54,7 +63,9 @@ void setup()
     pinMode(VapePwr, OUTPUT);
     digitalWrite(PwrLed, HIGH);
     wait(500);
+    /*
     uint8_t humdVal = loadState(HumidLevelPos);
+    MasterVapeEnabled = loadState(MasterHundEnablePos);
     if (humdVal == 0U) {
         saveState(HumidLevelPos, TargetHumd);
     }
@@ -62,9 +73,10 @@ void setup()
         saveState(HumidLevelPos, TargetHumd);
     }
     TargetHumd = humdVal;
-    Serial.begin(9600);
     Serial.println(humdVal);
     Serial.println(TargetHumd);
+    */
+    Serial.begin(9600);
 }
 
 void presentation()
@@ -74,20 +86,24 @@ void presentation()
 
     // Register all sensors to gw (they will be created as child devices)
     present(RoomTempId, S_TEMP);
-    present(RoomHumidId, S_HUM);
+    present(RoomHumdId, S_HUM);
     present(VapeStateId, S_LOCK);
     present(VapeAlarmId, S_MOTION);
 }
 
 void loop()
 {
-    wait(5000);
+    wait(500);
     float RoomHumd = RoomSens.readHumidity();
     wait(500);
     float RoomTemp = RoomSens.readTemperature(true);
-    wait(500);
-    float lowerTarget = static_cast<float>(TargetHumd - static_cast<uint8_t>(Hysteresis));
-    float upperTarget = static_cast<float>(static_cast<uint8_t>(Hysteresis) + TargetHumd);
+    if (RoomTemp > 1) {
+        RoomTemp = RoomTemp * tempCorrectionFactor;
+    }
+    Serial.println("temp reported: " + String(RoomTemp) + " *F");
+    Serial.println("humidity reported: " + String(RoomHumd) + " %");
+    float lowerTarget = static_cast<float>(TargetHumd - static_cast<uint8_t>(lowHysteresis));
+    float upperTarget = static_cast<float>(static_cast<uint8_t>(highHysteresis) + TargetHumd);
     if (RoomHumd > 0.0F && RoomHumd >= upperTarget) {
         VapePowered = false;
         Serial.println("Vape powered off");
@@ -101,7 +117,7 @@ void loop()
         Serial.println(RoomHumd);
         Serial.println(lowerTarget);
     }
-    if (VapePowered == true && RoomHumd < ((TargetHumd - Hysteresis) + 2) || (VapePoweredTime + 12000) > millis()) {
+    if (VapePowered == true && RoomHumd < ((TargetHumd - lowHysteresis) - 2) || (VapePoweredTime + 12000) > millis()) {
         send(VapeAlarm.set(true));
         wait(500);
     }
@@ -112,15 +128,23 @@ void loop()
     wait(500);
     send(RoomVapeStatus.set(VapePowered));
     wait(500);
+    send(HumdEnableMsg.set(MasterVapeEnabled));
+    wait(500);
+    digitalWrite(VapePwr, VapePowered);
 }
 
 void receive(const MyMessage& message) {
-    // We only expect one type of message from controller. But we better check anyway.
+
     if (message.isAck()) {
         Serial.println("This is an ack from node");
     }
 
-    if (message.type == V_TEMP && message.sensor == RoomHumidId) {
-        saveState(HumidLevelPos, message.bValue);
+    if (message.type == V_TEMP && message.sensor == RoomHumdId) {
+        saveState(HumidLevelPos, message.getInt());
+    }
+
+    if (message.type == V_LOCK_STATUS && message.sensor == MasterHumdEnableId) {
+        saveState(MasterHundEnablePos, message.getInt());
+        MasterVapeEnabled = message.getInt();
     }
 }

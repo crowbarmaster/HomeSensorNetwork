@@ -15,14 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.gateway.vsarduino.h">
+    <None Include="LCD_Controller.ino" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="__vm\.LCD_Controller.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Secret.h">
+    <ClInclude Include="LcdViewMethods.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GatewayNode.ino" />
+    <ClCompile Include="LcdViewMethods.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -15,14 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.gateway.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Secret.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="LcdI2cController.ino" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="GatewayNode.ino" />
-  </ItemGroup>
+ 
 </Project>

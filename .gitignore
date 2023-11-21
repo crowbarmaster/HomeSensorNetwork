@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 DoorRfidController\Secret.h
 /DoorRfidController/Secret.h
+/gateway/Secret.h

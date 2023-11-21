@@ -137,6 +137,6 @@ extern int isunordered(double, double);
 #define interrupts() sei()
 #define noInterrupts() cli()
 
-#include "GatewayNode.ino"
+#include "LCD_Controller.ino"
 #endif
 #endif
