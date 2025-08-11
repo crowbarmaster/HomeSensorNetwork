@@ -23,6 +23,8 @@
 #define MasterHumdEnableId 5
 #define RiseAboveStateId 6
 #define FallBelowStateId 7
+#define HouseTempId 8
+#define HeatFaultId 9
 DHT TortSens(TortSensPin, SensType);
 DHT RoomSens(RoomSensPin, SensType);
 
@@ -38,10 +40,11 @@ DHT RoomSens(RoomSensPin, SensType);
 MyMessage TortTempMsg(TortTempId, V_TEMP);
 MyMessage TortHumdMsg(TortHumdId, V_HUM);
 MyMessage RoomTempMsg(RoomTempId, V_TEMP);
-MyMessage RoomStatus(3, V_LOCK_STATUS);
+MyMessage RoomStatus(HeatStatusId, V_LOCK_STATUS);
+MyMessage HeatFaultMsg(HeatFaultId, V_TEMP);
 
 //Temp defaults
-const int TortTargetTemp = 85;
+const int TortTargetTemp = 85; 
 uint8_t TortTargetHumd = 46;
 uint8_t RoomTargetTemp = 75;
 const int RiseAboveTarget = 1;
@@ -51,6 +54,9 @@ bool HeatEnabled = false;
 bool MasterHeatEnable = true;
 bool MasterHumdEnable = true;
 bool HeatFaulted = false;
+float FaultedAtTemp = 0;
+unsigned long NextFaultCheck = 0;
+int HouseTemp = 0;
 
 // SaveState positions
 const uint8_t RoomTempPos = 0;
@@ -107,20 +113,21 @@ void presentation()
 
 void loop()
 {
-    wait(5000);
+    request(HouseTempId, V_TEMP);
+    wait(10000);
     // Read values
-    int16_t TortTemp = TortSens.readTemperature(true);
+    float TortTemp = TortSens.readTemperature(true);
     wait(500);
-    int16_t TortHumd = TortSens.readHumidity();
+    float TortHumd = TortSens.readHumidity();
     wait(500);
-    int16_t RoomTemp = RoomSens.readTemperature(true);
+    float RoomTemp = RoomSens.readTemperature(true);
     wait(500);
 
-    send(TortTempMsg.set(TortTemp));
+    send(TortTempMsg.set(TortTemp, 2));
     wait(500);
-    send(TortHumdMsg.set(TortHumd));
+    send(TortHumdMsg.set(TortHumd, 2));
     wait(500);
-    send(RoomTempMsg.set(RoomTemp));
+    send(RoomTempMsg.set(RoomTemp, 2));
     wait(500);
     send(RoomStatus.set(HeatEnabled));
     wait(500);
@@ -139,15 +146,13 @@ void loop()
     Serial.println(TortTemp);
     if (RoomTemp <= (RoomTargetTemp - FallBelowTarget) && !HeatEnabled && MasterHeatEnable) {
         PowerUpHeat();
-        if (HeatFaulted) {
-            HeatFaulted = false;
-        }
     }
     if (RoomTemp >= (RoomTargetTemp + RiseAboveTarget) && HeatEnabled) {
         ShutDownHeat();
-        if (HeatFaulted) {
-            HeatFaulted = false;
-        }
+    }
+    if ((RoomTemp > (RoomTargetTemp + (RiseAboveTarget)) && !HeatEnabled && !HeatFaulted) || (RoomTemp < (RoomTargetTemp - (RiseAboveTarget)) && HeatEnabled && !HeatFaulted)) {
+        HeatFaulted = true;
+        FaultedAtTemp = RoomTemp;
     }
     if (TortHumd <= (TortTargetHumd - FallBelowTarget) && MasterHumdEnable)
     {
@@ -158,22 +163,35 @@ void loop()
     {
         digitalWrite(PwrLed, LOW);
     }
-    if (RoomTemp > (RoomTargetTemp + (RiseAboveTarget + 2)) && !HeatEnabled && !HeatFaulted) {
-        if (PowerOnTime + 30000 > millis()) {
-            Serial.println("Heat threshold exceeded. Turning off heat.");
-            ShutDownHeat();
-            HeatEnabled = false;
-            HeatFaulted = true;
-            PowerOnTime = millis();
-        }
-    }
-    if (RoomTemp < (RoomTargetTemp - (RiseAboveTarget + 2)) && HeatEnabled && !HeatFaulted) {
-        if (PowerOnTime + 30000 > millis()) {
-            PowerUpHeat();
-            Serial.println("Heat threshold exceeded. Turning on heat.");
-            HeatEnabled = true;
-            HeatFaulted = true;
-            PowerOnTime = millis();
+    if (HeatFaulted) {
+        Serial.println("Heat has faulted!");
+        send(HeatFaultMsg.set(FaultedAtTemp, 2));
+        wait(500);
+        if (millis() > NextFaultCheck) {
+            if (FaultedAtTemp > RoomTargetTemp) {
+                if (RoomTemp < FaultedAtTemp && RoomTemp <= RoomTargetTemp + 1) {
+                    HeatFaulted = false;
+                } else if (RoomTemp < FaultedAtTemp) {
+                    FaultedAtTemp = RoomTemp;
+                    NextFaultCheck = millis() + 360000L;
+                } else {
+                    NextFaultCheck = millis() + 360000L;
+                    Serial.println("Performing faulted shutdown.");
+                    ShutDownHeat();
+                }
+            }
+            if (FaultedAtTemp < RoomTargetTemp) {
+                if (RoomTemp > FaultedAtTemp && RoomTemp >= RoomTargetTemp) {
+                    HeatFaulted = false;
+                } else if (RoomTemp > FaultedAtTemp) {
+                    FaultedAtTemp = RoomTemp;
+                    NextFaultCheck = millis() + 360000L;
+                } else {
+                    NextFaultCheck = millis() + 360000L;
+                    Serial.println("Performing faulted restart.");
+                    PowerUpHeat();
+                }
+            }
         }
     }
 }
@@ -223,5 +241,8 @@ void receive(const MyMessage& message) {
     }
     if (message.type == V_TEMP && message.sensor == RoomTempId) {
         saveState(RoomTempPos, message.getInt());
+    }
+    if (message.type == V_TEMP && message.sensor == HouseTempId) {
+        HouseTemp = message.getInt();
     }
 }

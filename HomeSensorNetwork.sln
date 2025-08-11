@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DoorRfidController", "DoorRfidController\DoorRfidController.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DoorNfcEntry", "DoorNfcEntry\DoorNfcEntry.vcxproj", "{BCB0851F-F709-4DBE-B7B4-3AE5AE7080D4}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GatewayNode", "gateway\gateway.vcxproj", "{19F60A53-13F1-4977-BB78-64C4A9EFE086}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RoomTempNode", "RoomTempNode\RoomTempNode.vcxproj", "{0641641F-C290-4CBE-BE4F-DB177D0B4C07}"
@@ -23,6 +25,10 @@ Global
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{BCB0851F-F709-4DBE-B7B4-3AE5AE7080D4}.Debug|x86.ActiveCfg = Debug|Win32
+		{BCB0851F-F709-4DBE-B7B4-3AE5AE7080D4}.Debug|x86.Build.0 = Debug|Win32
+		{BCB0851F-F709-4DBE-B7B4-3AE5AE7080D4}.Release|x86.ActiveCfg = Release|Win32
+		{BCB0851F-F709-4DBE-B7B4-3AE5AE7080D4}.Release|x86.Build.0 = Release|Win32
 		{19F60A53-13F1-4977-BB78-64C4A9EFE086}.Debug|x86.ActiveCfg = Debug|Win32
 		{19F60A53-13F1-4977-BB78-64C4A9EFE086}.Debug|x86.Build.0 = Debug|Win32
 		{19F60A53-13F1-4977-BB78-64C4A9EFE086}.Release|x86.ActiveCfg = Release|Win32

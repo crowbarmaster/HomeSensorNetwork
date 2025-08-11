@@ -37,6 +37,8 @@
 #define OreoTempSensorId 1
 #define OreoHumdSensorId 2
 #define LoganHeatStatusId 3
+#define LoganHouseTempId 8
+#define LoganHeatFaultId 9
 
 // SaveState positions
 const uint8_t buzzerEnablePos = 0;
@@ -45,6 +47,7 @@ const uint8_t buzzerEnablePos = 0;
 
 MyMessage LoganHeatStatusMsg(LoganHeatSensorId, V_LOCK_STATUS);
 MyMessage HomeTempMessage(1, V_TEMP);
+MyMessage LoganTempMessage(LoganHouseTempId, V_TEMP);
 const int CheckTime = 120000;
 const int HouseLowTempAlarmThreshold = 60;
 int curCheck = 0;
@@ -85,6 +88,7 @@ void loop()
     Serial.println("Home Node temp reported: " + String(temp) + " *F");
     Serial.println("Home Node humidity reported: " + String(humd) + " %");
     gatewayTransportSend(HomeTempMessage.set(temp, 2));
+    
 
     if (temp < 64.0F) { 
         for (int i = 0; i < 3; i++) {
@@ -148,7 +152,7 @@ void receive(const MyMessage& message) {
         break;
     case LoganNodeID:
         if (message.sensor == OreoHumdSensorId) {
-            float humd = message.getInt();
+            float humd = message.getFloat();
             Serial.println("Oreo's tank humidity reported: " + String(humd) + " %");
         }
         if (message.sensor == LoganHeatStatusId) {
@@ -157,12 +161,16 @@ void receive(const MyMessage& message) {
             Serial.println(value ? "enabled" : "disabled");
         }
         if (message.sensor == OreoTempSensorId) {
-            float temp = message.getInt();
+            float temp = message.getFloat();
             Serial.println("Oreo's tank temp reported: " + String(temp) + " *F");
         }
         if (message.sensor == LoganHeatSensorId) {
-            float temp = message.getInt();
+            float temp = message.getFloat();
             Serial.println("Logans's temp reported: " + String(temp) + " *F");
+        }
+        if (message.sensor == LoganHeatFaultId) {
+            float temp = message.getFloat();
+            Serial.println("Logans's heat is faulted at: " + String(temp) + " *F!");
         }
         break;
     default:

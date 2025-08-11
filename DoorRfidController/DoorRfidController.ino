@@ -18,10 +18,10 @@ const long UNLOCK_TIME = 10000;
 const int LockOutput = A5;
 const int SpkrOutput = A4;
 const int AtHomeInd = 4;
-const int AtHomeEntry = 7;
+const int OutsideEntryBtn = 7;
 const int LEDG = 5;
 const int LEDB = 6;
-const int ExitBtn = 8;
+const int InsideEntryBtn = 8;
 const int BUFFER_SIZE = 14;
 int buffer_index = 0;
 bool AtHome = false;
@@ -38,8 +38,8 @@ void setup()
     pinMode(LEDG, OUTPUT);
     pinMode(LEDB, OUTPUT);
     pinMode(AtHomeInd, OUTPUT);
-    pinMode(ExitBtn, INPUT_PULLUP);
-    pinMode(AtHomeEntry, INPUT_PULLUP);
+    pinMode(InsideEntryBtn, INPUT_PULLUP);
+    pinMode(OutsideEntryBtn, INPUT_PULLUP);
     ssrfid.begin(9600);
     Serial.println("Serial init okay!");
 }
@@ -47,11 +47,11 @@ void setup()
 void loop()
 {
     long startTime = millis();
-    if (digitalRead(ExitBtn) == LOW)
+    if (digitalRead(InsideEntryBtn) == LOW)
     {
         delay(10);
         Serial.println("Exit pressed");
-        while (digitalRead(ExitBtn) == LOW)
+        while (digitalRead(InsideEntryBtn) == LOW)
         {
             if (millis() >= startTime + 2000)
             {
@@ -64,7 +64,7 @@ void loop()
         }
     }
 
-    if (digitalRead(AtHomeEntry) == false)
+    if (digitalRead(OutsideEntryBtn) == false)
     {
         if (AtHome == true) {
             Unlock();
